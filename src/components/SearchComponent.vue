@@ -21,20 +21,6 @@
           </v-row>
           <v-row>
             <v-col cols="12">
-              <!-- <v-autocomplete
-                v-model="searchPhrase"
-                :items="autoCompleteItems"
-                :solo="!isGalleryOpen"
-                :dense="!isGalleryOpen"
-                hide-details
-                prepend-inner-icon="mdi-magnify"
-                append-icon=""
-                :filled="isGalleryOpen"
-                :rounded="isGalleryOpen"
-                :label="isGalleryOpen ? '' : initialValue"
-                :value-comparator="autocompleteCheckUp"
-                @keypress.enter="getPhotos">
-              </v-autocomplete> -->
               <v-text-field
                 :solo="!isGalleryOpen"
                 hide-details
@@ -46,7 +32,7 @@
                 @input="autocompleteCheckUp"
                 @keypress.enter="getPhotos">
               </v-text-field>
-              <v-list class="mt-2" rounded dense v-if="isAutocompleteVisible">
+              <v-list max-height="20vh" class="mt-2" rounded dense v-if="isAutocompleteVisible">
                 <v-list-item-group>
                   <v-list-item v-for="(autoCompleteItem, index) in autoCompleteItems" :key="index">
                     <v-list-item-content>
@@ -101,6 +87,9 @@
     methods: {
       autocompleteCheckUp(){
         this.isAutocompleteVisible = false
+        this.autoCompleteItems.forEach(autoCompleteItem => {
+          if(this.searchPhrase !== autoCompleteItem) this.autoCompleteItems.pop(autoCompleteItem)
+        })
         if(this.searchPhrase.length >= 3){
         this.isAutocompleteVisible = true
           this.unsplashInstance.search.photos(this.searchPhrase.toLowerCase())

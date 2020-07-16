@@ -149,11 +149,22 @@ export default {
         displayModalWindow(...values){
             this.isModalWindowVisible = true
             this.overlay = true
-            this.modalWindow.regularImage = values[0]
-            this.modalWindow.userProfileImage = values[1]
-            this.modalWindow.userName = values[2]
-            this.modalWindow.userSocialMedia = values[3]
-            this.modalWindow.location = values[4]
+            function* propsGenerator(){
+                yield 'regularImage'
+                yield 'userProfileImage'
+                yield 'userName'
+                yield 'userSocialMedia'
+                yield 'location'
+                return
+            }
+            let propsGeneratorObject = propsGenerator()
+
+            values.forEach(propertyValue => {
+                Object.defineProperty(
+                    this.modalWindow, 
+                    propsGeneratorObject.next().value, 
+                    { value: propertyValue })
+            })
         },
         closeModalWindow(){
             this.isModalWindowVisible = false

@@ -149,12 +149,11 @@ export default {
         displayModalWindow(...values){
             this.isModalWindowVisible = true
             this.overlay = true
+            let self = this
             function* propsGenerator(){
-                yield 'regularImage'
-                yield 'userProfileImage'
-                yield 'userName'
-                yield 'userSocialMedia'
-                yield 'location'
+                for(let propertyName of Object.keys(self.modalWindow)){
+                    yield propertyName
+                }
                 return
             }
             let propsGeneratorObject = propsGenerator()

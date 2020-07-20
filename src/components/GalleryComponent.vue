@@ -25,7 +25,7 @@
                         <v-responsive>
                             <v-img 
                                 :src="image.previewURL" 
-                                :key="image.id" 
+                                :key="image.UID"
                                 @click.prevent="displayModalWindow(
                                                         image.regularURL,
                                                         image.user.profileImage,
@@ -123,6 +123,7 @@ export default {
             this.images = []
             responseFromSearch.response.results.forEach(imageObject => {
                 this.images.push({
+                    UID: imageObject.id,
                     previewURL: imageObject.urls.small,
                     regularURL: imageObject.urls.regular,
                     tags: [

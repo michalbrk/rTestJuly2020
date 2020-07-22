@@ -29,7 +29,7 @@
                 :filled="isGalleryOpen"
                 :rounded="isGalleryOpen"
                 :label="isGalleryOpen ? '' : initialValue"
-                @input="autocompleteCheckUp"
+                @input="mainHandler"
                 @keypress.enter="getPhotos">
               </v-text-field>
               <v-list max-height="20vh" class="mt-2" rounded dense v-if="isAutocompleteVisible">
@@ -75,6 +75,7 @@
         initialValue: "Search free high-resolutions photos",
         searchPhrase: "",
         autoCompleteItems: [],
+        collectedSearchTags: [],
         tempTrending: ['garden','sport','coffee'],
         unsplashInstance: new Unsplash({ 
           accessKey: API_KEY.value,
@@ -85,40 +86,44 @@
       }
     },
     methods: {
-      autocompleteCheckUp(){
-        this.isAutocompleteVisible = false
-        this.autoCompleteItems.forEach(autoCompleteItem => {
-          if(this.searchPhrase !== autoCompleteItem) this.autoCompleteItems.pop(autoCompleteItem)
-        })
-        if(this.searchPhrase.length >= 3){
-        this.isAutocompleteVisible = true
-          this.unsplashInstance.search.photos(this.searchPhrase.toLowerCase())
-          .then(toJson)
-          .then(response => {
-            response.results.forEach(responseObject => {
-              responseObject.tags.forEach(tagItem => {
-                if(tagItem.title.toLowerCase().includes(this.searchPhrase.toLowerCase())){
-                  if(this.autoCompleteItems.length <= 0){
-                    this.isAutocompleteVisible = true
-                    this.autoCompleteItems.push(tagItem.title.toLowerCase())
-                  } else if(this.autoCompleteItems[0] === "No records found..."){
-                    this.autoCompleteItems = []
-                    this.autoCompleteItems.push(tagItem.title.toLowerCase())
-                  } else if(this.autoCompleteItems.length === 1){
-                    this.autoCompleteItems.push(tagItem.title.toLowerCase())
-                  } else {
-                    let freeFromDuplicatesArray = [...new Set(this.autoCompleteItems)]
-                    this.autoCompleteItems = freeFromDuplicatesArray
-                  }
-                } else if(this.autoCompleteItems.length <= 0) {
-                  this.isAutocompleteVisible = true
-                  this.autoCompleteItems.push("No records found...")
-                }
-              })
+      promptsCollector(){
+        this.unsplashInstance.search.photos(this.searchPhrase.toLowerCase())
+        .then(toJson)
+        .then(response => {
+          response.results.forEach(responseObject => {
+            responseObject.tags.forEach(tagItem => {
+              this.collectedSearchTags.push(tagItem.title.toLowerCase())
             })
           })
-          .catch(error => console.log(error))
+        })
+        .catch(error => { throw new Error(error) })
+        if(this.collectedSearchTags.length > 10000){
+          this.collectedSearchTags.splice(10000, this.collectedSearchTags.length - 1)
         }
+      },
+      mainHandler(){
+        if(this.searchPhrase.length >= 3){
+          this.autoCompleteItems = []
+          this.promptsCollector()
+          let cleanedArray = this.searchTagsHandler(this.collectedSearchTags, this.searchPhrase)
+          this.autoCompleteItems = cleanedArray
+          if(this.autoCompleteItems.length <= 0){
+            this.autoCompleteItems.push("No records found...")
+          } else {
+            this.isAutocompleteVisible = true
+          }
+        } else {
+          this.isAutocompleteVisible = false
+          this.autoCompleteItems = []
+        }
+      },
+      searchTagsHandler(array, searchTerm){
+        let freeFromDuplicatesArray = [...new Set(array)]
+        let pattern = new RegExp(`${searchTerm}`)
+        let filteredArray = freeFromDuplicatesArray.filter(itemToMatch => {
+          return pattern.test(itemToMatch)
+        })
+        return filteredArray
       },
       setSearchPhrase(value){
         this.searchPhrase = value
@@ -141,7 +146,7 @@
         .then(response => {
           this.$eventBus.$emit('gallery-items', { response: response, searchPhrase: this.searchPhrase })
         })
-        .catch(error => console.log(error))
+        .catch(error => { throw new Error(error)})
       }
     }
   }

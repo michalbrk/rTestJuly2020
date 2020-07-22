@@ -86,36 +86,20 @@
       }
     },
     methods: {
-      promptsCollector(){
-        this.unsplashInstance.search.photos(this.searchPhrase.toLowerCase())
-        .then(toJson)
-        .then(response => {
-          response.results.forEach(responseObject => {
-            responseObject.tags.forEach(tagItem => {
-              this.collectedSearchTags.push(tagItem.title.toLowerCase())
-            })
-          })
-        })
-        .catch(error => { throw new Error(error) })
-        if(this.collectedSearchTags.length > 10000){
-          this.collectedSearchTags.splice(10000, this.collectedSearchTags.length - 1)
-        }
-      },
-      mainHandler(){
-        if(this.searchPhrase.length >= 3){
-          this.autoCompleteItems = []
-          this.promptsCollector()
-          let cleanedArray = this.searchTagsHandler(this.collectedSearchTags, this.searchPhrase)
-          this.autoCompleteItems = cleanedArray
-          if(this.autoCompleteItems.length <= 0){
-            this.autoCompleteItems.push("No records found...")
-          } else {
-            this.isAutocompleteVisible = true
-          }
-        } else {
-          this.isAutocompleteVisible = false
-          this.autoCompleteItems = []
-        }
+      async promptsCollector(){
+        await this.unsplashInstance.search.photos(this.searchPhrase.toLowerCase())
+              .then(toJson)
+              .then(response => {
+                response.results.forEach(responseObject => {
+                  responseObject.tags.forEach(tagItem => {
+                    this.collectedSearchTags.push(tagItem.title.toLowerCase())
+                    if(this.collectedSearchTags.length > 1000){
+                      this.collectedSearchTags.splice(1000, this.collectedSearchTags.length - 1)
+                    }
+                  })
+                })
+              })
+              .catch(error => { throw new Error(error) })
       },
       searchTagsHandler(array, searchTerm){
         let freeFromDuplicatesArray = [...new Set(array)]
@@ -124,6 +108,22 @@
           return pattern.test(itemToMatch)
         })
         return filteredArray
+      },
+     async mainHandler(){
+        if(this.searchPhrase.length >= 3){
+          await this.promptsCollector()
+          let cleanedArray = this.searchTagsHandler(this.collectedSearchTags, this.searchPhrase)
+          this.autoCompleteItems = cleanedArray
+          if(this.autoCompleteItems.length <= 0){
+            this.autoCompleteItems.push("No records found...")
+            this.isAutocompleteVisible = true
+          } else {
+            this.isAutocompleteVisible = true
+          }
+        } else {
+          this.isAutocompleteVisible = false
+          this.autoCompleteItems = []
+        }
       },
       setSearchPhrase(value){
         this.searchPhrase = value

@@ -1,25 +1,30 @@
 <template>
   <v-container>
-      <v-row>
+      <v-row dense>
         <v-col cols="1" sm="2"></v-col>
         <v-col cols="10" sm="8">
-          <v-row v-if="isHeadingVisible">
-            <v-col cols="12" sm="6">
+          <v-row dense v-if="isHeadingVisible">
+            <v-col cols="12" md="6">
               <v-row>
                 <v-col cols="12">
                   <div class="display-2 font-weight-bold white--text">Unsplash</div>
                 </v-col>
               </v-row>
-              <v-row>
+              <v-row dense>
                 <v-col cols="12">
-                  <div class="subheading white--text">The internet's source of <a href="#" class="text-decoration-underline">freely-usable images</a>.</div>
-                  <div class="subheading white--text">Powered by creators everywhere.</div>
+                  <div class="white--text text-body-2 text-sm-body-2 text-md-body-1">
+                    The internet's source of 
+                    <a href="#" class="text-decoration-underline">freely-usable images</a>.
+                  </div>
+                  <div class="white--text text-body-2 text-sm-body-2 text-md-body-1">
+                    Powered by creators everywhere.
+                  </div>
                 </v-col>
               </v-row>
             </v-col>
             <v-col cols="12" sm="6"></v-col>
           </v-row>
-          <v-row>
+          <v-row dense>
             <v-col cols="12">
               <v-text-field
                 :solo="!isGalleryOpen"

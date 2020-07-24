@@ -149,7 +149,13 @@
         this.unsplashInstance.search.photos(this.searchPhrase)
         .then(toJson)
         .then(response => {
-          this.$eventBus.$emit('gallery-items', { response: response, searchPhrase: this.searchPhrase })
+          if(response.results.length > 0){
+            this.$eventBus.$emit('gallery-items', { 
+                                          response: response, 
+                                          searchPhrase: this.searchPhrase })
+          } else {
+            this.$eventBus.$emit('no-results', this.searchPhrase)
+          }
         })
         .catch(error => { throw new Error(error)})
       }

@@ -129,6 +129,23 @@
                 </v-card>
             </v-overlay>
         </v-container>
+        <v-container v-if="isNoResultFound">
+            <v-layout>
+                <v-flex xs0 md3></v-flex>
+                <v-flex xs12 md6>
+                    <div class="d-flex flex-column">
+                        <v-icon x-large>mdi-alert</v-icon>
+                        <div class="d-flex justify-center black--text text-subtitle-1 text-md-h6">
+                            <p>Ups! Seems that there is nothing related here to "{{ searchPhrase }}"</p>
+                        </div>
+                        <div class="d-flex justify-center grey--text text-subtitle-1">
+                            <p>Please, try another search.</p>
+                        </div>
+                    </div>
+                </v-flex>
+                <v-flex xs0 md3></v-flex>
+            </v-layout>
+        </v-container>
     </v-container>
 </template>
 <script>
@@ -141,6 +158,7 @@ export default {
             isResultsNavVisible: true,
             isGalleryGridVisible: true,
             isModalWindowVisible: false,
+            isNoResultFound: false,
             images: [],
             allTags: [],
             searchPhrase: "",
@@ -178,9 +196,21 @@ export default {
                     this.allTags.push(tagItem.title)
                 })
             })
+            this.isNoResultFound = false
             this.isGalleryVisible = true
+            this.isResultsNavVisible = true
+            this.isGalleryGridVisible = true
             this.searchPhrase = responseFromSearch.searchPhrase
         })
+        this.$eventBus.$on('no-results', searchTerm => {
+            this.isResultsNavVisible = false
+            this.isGalleryGridVisible = false
+            this.isNoResultFound = true
+            this.searchPhrase = searchTerm
+        })
+    },
+    beforeDestroy(){
+        this.$eventBus.$off()
     },
     methods: {
         displayModalWindow(...values){

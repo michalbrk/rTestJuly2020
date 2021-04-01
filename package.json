@@ -10,6 +10,8 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "highlight.js": "^10.6.0",
+    "is-svg": "^4.2.2",
+    "ssri": "^8.0.1",
     "unsplash-js": "^6.0.0",
     "vue": "^2.6.11",
     "vuetify": "^2.2.11"

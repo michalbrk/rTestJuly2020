@@ -11,6 +11,8 @@
     "core-js": "^3.6.5",
     "highlight.js": "^10.6.0",
     "is-svg": "^4.2.2",
+    "normalize-url": "^4.5.1",
+    "postcss": "^8.2.10",
     "ssri": "^8.0.1",
     "unsplash-js": "^7.0.11",
     "vue": "^2.6.11",
